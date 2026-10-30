@@ -1,0 +1,131 @@
+# Publishes the signed catalog files unchanged: to GitHub Pages and to the fixed `catalog` release.
+# CI holds no key and never creates or edits a catalog file; it only checks, copies and uploads.
+name: publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# No default token permissions; each job asks only for what it needs.
+permissions: {}
+
+# Publishes never overlap or cancel each other; a newer one waits for the running one.
+concurrency:
+  group: catalog-publish
+  cancel-in-progress: false
+
+env:
+  # The published set: exactly the names in tools/release/verify.ps1 $CatalogFiles.
+  CATALOG_FILES: keys.json keys.json.minisig index.json index.json.minisig revoked.json revoked.json.minisig
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check catalog files
+        shell: bash
+        run: |
+          set -euo pipefail
+          fail=0
+          err() { echo "::error::$1"; fail=1; }
+          present() { [ -e "$1" ] || [ -L "$1" ]; }
+          for base in keys index revoked; do
+            json="$base.json"
+            sig="$base.json.minisig"
+            for f in "$json" "$sig"; do
+              if present "$f" && { [ -L "$f" ] || [ ! -f "$f" ]; }; then
+                err "$f is not a regular file"
+              fi
+            done
+            if present "$json" && ! present "$sig"; then err "$json has no $sig"; fi
+            if present "$sig" && ! present "$json"; then err "$sig has no $json"; fi
+            if [ -f "$json" ] && [ ! -L "$json" ]; then
+              size=$(wc -c < "$json")
+              if [ "$size" -gt 4194304 ]; then err "$json is $size bytes, over the 4 MiB (4194304 bytes) limit"; fi
+            fi
+            if [ -f "$sig" ] && [ ! -L "$sig" ]; then
+              size=$(wc -c < "$sig")
+              if [ "$size" -gt 4096 ]; then err "$sig is $size bytes, over the 4096-byte limit"; fi
+            fi
+          done
+          if [ "$fail" -ne 0 ]; then
+            echo "catalog check failed; nothing is published"
+            exit 1
+          fi
+          echo "catalog check passed"
+
+      - name: Stage catalog files
+        shell: bash
+        run: |
+          set -euo pipefail
+          site="$RUNNER_TEMP/site"
+          mkdir -p "$site"
+          for f in $CATALOG_FILES; do
+            if [ -f "$f" ]; then cp -- "$f" "$site/$f"; fi
+          done
+          ls -l "$site"
+          (cd "$site" && sha256sum -- * 2>/dev/null || true)
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ runner.temp }}/site/
+
+  pages:
+    needs: check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  release:
+    needs: check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Upload to the catalog release
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Created once, at this commit; an existing release and its tag are never moved.
+          if ! gh release view catalog --json tagName > /dev/null 2>&1; then
+            gh release create catalog --target "$GITHUB_SHA" --title catalog \
+              --notes "Signed catalog files, mirrored from GitHub Pages. Fixed fallback URL: do not delete or move this release."
+          fi
+          upload=()
+          for f in $CATALOG_FILES; do
+            if [ -f "$f" ]; then upload+=("$f"); fi
+          done
+          if [ "${#upload[@]}" -gt 0 ]; then
+            gh release upload catalog "${upload[@]}" --clobber
+          fi
+          # Remove any of the six names no longer in the repo.
+          assets=$(gh release view catalog --json assets --jq '.assets[].name')
+          for f in $CATALOG_FILES; do
+            if [ ! -f "$f" ] && grep -qxF -- "$f" <<< "$assets"; then
+              gh release delete-asset catalog "$f" --yes
+            fi
+          done
+          gh release view catalog --json assets --jq '.assets[] | "\(.name) \(.size)"'

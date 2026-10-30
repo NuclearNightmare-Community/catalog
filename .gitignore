@@ -1,0 +1,2 @@
+# Worktrees (all work happens in one, then merges to main)
+.worktrees/
