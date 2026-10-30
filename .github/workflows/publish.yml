@@ -1,0 +1,110 @@
+# Publishes the signed catalog files unchanged: to GitHub Pages and to the fixed `catalog` release.
+# CI holds no key and never creates or edits a catalog file; it only checks, copies and uploads.
+name: publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# No default token permissions; each job asks only for what it needs.
+permissions: {}
+
+# Per ref: at most one run in progress and one pending. A running publish is never cancelled; a newer
+# pending run replaces the older pending one (GitHub concurrency semantics).
+concurrency:
+  group: catalog-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # The published set: exactly the names in tools/release/verify.ps1 $CatalogFiles.
+  CATALOG_FILES: keys.json keys.json.minisig index.json index.json.minisig revoked.json revoked.json.minisig
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Self-test the check
+        shell: bash
+        run: bash .github/test-check-catalog.sh
+
+      - name: Check catalog files
+        shell: bash
+        run: bash .github/check-catalog.sh .
+
+      - name: Stage catalog files
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          site="$RUNNER_TEMP/site"
+          mkdir -p "$site"
+          for f in $CATALOG_FILES; do
+            if [ -f "$f" ]; then cp -- "$f" "$site/$f"; fi
+          done
+          ls -l "$site"
+          (cd "$site" && sha256sum -- * 2>/dev/null || true)
+
+      - if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ runner.temp }}/site/
+
+  pages:
+    needs: check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  release:
+    needs: check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Upload to the catalog release
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Created once, at this commit; an existing release and its tag are never moved.
+          if ! gh release view catalog --json tagName > /dev/null 2>&1; then
+            gh release create catalog --target "$GITHUB_SHA" --title catalog \
+              --notes "Signed catalog files, mirrored from GitHub Pages. Fixed fallback URL: do not delete or move this release."
+          fi
+          upload=()
+          for f in $CATALOG_FILES; do
+            if [ -f "$f" ]; then upload+=("$f"); fi
+          done
+          if [ "${#upload[@]}" -gt 0 ]; then
+            gh release upload catalog "${upload[@]}" --clobber
+          fi
+          # Remove any of the six names no longer in the repo.
+          assets=$(gh release view catalog --json assets --jq '.assets[].name')
+          for f in $CATALOG_FILES; do
+            if [ ! -f "$f" ] && grep -qxF -- "$f" <<< "$assets"; then
+              gh release delete-asset catalog "$f" --yes
+            fi
+          done
+          gh release view catalog --json assets --jq '.assets[] | "\(.name) \(.size)"'
