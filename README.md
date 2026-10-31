@@ -1,6 +1,6 @@
-# nuclear-nightmare-mods
+# NuclearNightmare-Community/catalog
 
-The signed mod catalog for Nuclear Nightmare mods published by cawaltrip. The mod manager and the reference verifier download it from here and trust it only when its signatures check out against public keys built into them; this repo and its hosting are not trusted by themselves.
+The signed mod catalog for Nuclear Nightmare mods published by the NuclearNightmare-Community organization. The mod manager and the reference verifier download it from here and trust it only when its signatures check out against public keys built into them; this repo and its hosting are not trusted by themselves.
 
 ## Files
 
@@ -14,8 +14,8 @@ Each `.json` is published together with its `.minisig`, or not at all. The forma
 
 ## Where it is served
 
-- GitHub Pages: `https://cawaltrip.github.io/nuclear-nightmare-mods/<file>`
-- The `catalog` release (built-in fallback): `https://github.com/cawaltrip/nuclear-nightmare-mods/releases/download/catalog/<file>`
+- GitHub Pages: `https://nuclearnightmare-community.github.io/catalog/<file>`
+- The `catalog` release (built-in fallback): `https://github.com/NuclearNightmare-Community/catalog/releases/download/catalog/<file>`
 
 Both serve the same bytes. Only the six files above are published; nothing else in this repo (this README, the workflow and its check scripts in `.github/`) reaches Pages or the release.
 
