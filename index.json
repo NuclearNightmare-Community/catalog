@@ -1,7 +1,258 @@
 {
-  "schema": 1,
-  "serial": 1,
-  "issued": "2026-10-30T23:11:49Z",
-  "game_builds": [],
-  "packages": []
+  "schema": 2,
+  "serial": 2,
+  "issued": "2026-11-21T00:59:08Z",
+  "game_builds": [
+    {
+      "version": "V8.2.3",
+      "build": "26601774"
+    }
+  ],
+  "packages": [
+    {
+      "id": "nuclearnightmare-community.base",
+      "name": "Nuclear Nightmare base pack",
+      "kind": "base",
+      "publisher": "NuclearNightmare-Community",
+      "repo": "NuclearNightmare-Community/base",
+      "license": "MIT",
+      "nexus_url": null,
+      "versions": [
+        {
+          "version": "0.6.0",
+          "game": {
+            "version": "V8.2.3",
+            "build": "26601774"
+          },
+          "ue4ss": "v3.0.1-1181-g83330635",
+          "dependsOn": [],
+          "contains": [
+            {
+              "id": "nuclearnightmare-community.nucleus",
+              "version": "0.22.0"
+            }
+          ],
+          "url": "https://github.com/NuclearNightmare-Community/base/releases/download/v0.6.0/base-0.6.0.zip",
+          "sha256": "5c2dcc6265e136539b9af389cc14c4d3700c3909173822eb8883599b58ebbc60",
+          "size": 9742783,
+          "published": "2026-11-21T00:58:31Z",
+          "installable_after": "2026-11-21T00:58:31Z",
+          "changelog_url": "https://github.com/NuclearNightmare-Community/base/releases/tag/v0.6.0",
+          "attestation": null
+        }
+      ]
+    },
+    {
+      "id": "nuclearnightmare-community.base-installer",
+      "name": "Nuclear Nightmare installer",
+      "kind": "installer",
+      "publisher": "NuclearNightmare-Community",
+      "repo": "NuclearNightmare-Community/base",
+      "license": "MIT",
+      "nexus_url": null,
+      "versions": [
+        {
+          "version": "0.6.0",
+          "for_base": "0.6.0",
+          "game": {
+            "version": "V8.2.3",
+            "build": "26601774"
+          },
+          "ue4ss": "v3.0.1-1181-g83330635",
+          "dependsOn": [],
+          "url": "https://github.com/NuclearNightmare-Community/base/releases/download/v0.6.0/Install-NNMods.exe",
+          "sha256": "1ab43b589fe76666053ed3e0f03c4ce192d028d4f0b8e4925d6c5d290728eb53",
+          "size": 109056,
+          "published": "2026-11-21T00:58:31Z",
+          "installable_after": "2026-11-21T00:58:31Z",
+          "changelog_url": "https://github.com/NuclearNightmare-Community/base/releases/tag/v0.6.0",
+          "attestation": null
+        }
+      ]
+    },
+    {
+      "id": "nuclearnightmare-community.nucleus",
+      "name": "Nucleus",
+      "displayName": "Nucleus (Mod Core)",
+      "description": "The shared core that other Nuclear Nightmare mods build on: settings, menus, and controls in the game's own style, and safe hooks into the game. Installed once.",
+      "categories": [
+        "library"
+      ],
+      "kind": "mod",
+      "publisher": "NuclearNightmare-Community",
+      "repo": "NuclearNightmare-Community/nucleus",
+      "license": "MIT",
+      "nexus_url": null,
+      "versions": [
+        {
+          "version": "0.22.0",
+          "scope": "client",
+          "game": {
+            "version": "V8.2.3",
+            "build": "26601774"
+          },
+          "ue4ss": "v3.0.1-1181-g83330635",
+          "dependsOn": [],
+          "url": "https://github.com/NuclearNightmare-Community/nucleus/releases/download/v0.22.0/nucleus-0.22.0.zip",
+          "sha256": "a297b6fa9252f27a474b244307917951be9dac4aadd12c67de0d5576cc3a2712",
+          "size": 708677,
+          "published": "2026-11-21T00:57:51Z",
+          "installable_after": "2026-11-21T00:57:51Z",
+          "changelog_url": "https://github.com/NuclearNightmare-Community/nucleus/releases/tag/v0.22.0",
+          "attestation": null
+        }
+      ]
+    },
+    {
+      "id": "nuclearnightmare-community.mod-manager",
+      "name": "ModManager",
+      "displayName": "Mod Manager",
+      "description": "Adds Manage Mods to the title screen: turn mods on or off, change their settings, and restart the game to apply. Browsing and installing from the catalog are coming.",
+      "categories": [
+        "tools",
+        "ui"
+      ],
+      "kind": "mod",
+      "publisher": "NuclearNightmare-Community",
+      "repo": "NuclearNightmare-Community/mod-manager",
+      "license": "MIT",
+      "nexus_url": null,
+      "versions": [
+        {
+          "version": "0.4.0",
+          "scope": "client",
+          "game": {
+            "version": "V8.2.3",
+            "build": "26601774"
+          },
+          "ue4ss": "v3.0.1-1181-g83330635",
+          "dependsOn": [
+            {
+              "id": "nuclearnightmare-community.nucleus",
+              "version": ">=0.21.0"
+            }
+          ],
+          "url": "https://github.com/NuclearNightmare-Community/mod-manager/releases/download/v0.4.0/mod-manager-0.4.0.zip",
+          "sha256": "bf73cbe52648fc575d6ad50576a239de634576b35c147683d06bcca52ca13b54",
+          "size": 40366,
+          "published": "2026-11-21T00:42:37Z",
+          "installable_after": "2026-11-21T00:42:37Z",
+          "changelog_url": "https://github.com/NuclearNightmare-Community/mod-manager/releases/tag/v0.4.0",
+          "attestation": null
+        }
+      ]
+    },
+    {
+      "id": "nuclearnightmare-community.hud-clock",
+      "name": "HudClock",
+      "displayName": "HUD Clock",
+      "description": "Shows the in-game time on your HUD during a map.",
+      "categories": [
+        "ui",
+        "qol"
+      ],
+      "kind": "mod",
+      "publisher": "NuclearNightmare-Community",
+      "repo": "NuclearNightmare-Community/hud-clock",
+      "license": "MIT",
+      "nexus_url": null,
+      "versions": [
+        {
+          "version": "0.3.0",
+          "scope": "client",
+          "game": {
+            "version": "V8.2.3",
+            "build": "26601774"
+          },
+          "ue4ss": "v3.0.1-1181-g83330635",
+          "dependsOn": [
+            {
+              "id": "nuclearnightmare-community.nucleus",
+              "version": ">=0.9.0"
+            }
+          ],
+          "url": "https://github.com/NuclearNightmare-Community/hud-clock/releases/download/v0.3.0/hud-clock-0.3.0.zip",
+          "sha256": "f7c0bfdedf5ad36d731628526251fdc5f5ef4616b7a41ff6ec66a8113fa9aa7a",
+          "size": 8620,
+          "published": "2026-11-21T00:42:39Z",
+          "installable_after": "2026-11-21T00:42:39Z",
+          "changelog_url": "https://github.com/NuclearNightmare-Community/hud-clock/releases/tag/v0.3.0",
+          "attestation": null
+        }
+      ]
+    },
+    {
+      "id": "nuclearnightmare-community.waypoints",
+      "name": "Waypoints",
+      "displayName": "Map Waypoints+",
+      "description": "Adds \"Mark all\" and \"Clear all\" buttons to the map to immediately mark and clear waypoints.",
+      "categories": [
+        "qol",
+        "ui"
+      ],
+      "kind": "mod",
+      "publisher": "NuclearNightmare-Community",
+      "repo": "NuclearNightmare-Community/waypoints",
+      "license": "MIT",
+      "nexus_url": null,
+      "versions": [
+        {
+          "version": "0.3.1",
+          "scope": "client",
+          "game": {
+            "version": "V8.2.3",
+            "build": "26601774"
+          },
+          "ue4ss": "v3.0.1-1181-g83330635",
+          "dependsOn": [
+            {
+              "id": "nuclearnightmare-community.nucleus",
+              "version": ">=0.9.0"
+            }
+          ],
+          "url": "https://github.com/NuclearNightmare-Community/waypoints/releases/download/v0.3.1/waypoints-0.3.1.zip",
+          "sha256": "4e40e992088b86f1f2fee25c43f4449852a5283f1fff056438956db07e43e789",
+          "size": 21266,
+          "published": "2026-11-21T00:49:24Z",
+          "installable_after": "2026-11-21T00:49:24Z",
+          "changelog_url": "https://github.com/NuclearNightmare-Community/waypoints/releases/tag/v0.3.1",
+          "attestation": null
+        }
+      ]
+    },
+    {
+      "id": "nuclearnightmare-community.whistle-mute",
+      "name": "WhistleMute",
+      "displayName": "Whistle Emote Mute",
+      "description": "Silences the whistle emote for you, from any player (others still get to be annoyed by it).",
+      "categories": [
+        "audio",
+        "qol"
+      ],
+      "kind": "mod",
+      "publisher": "NuclearNightmare-Community",
+      "repo": "NuclearNightmare-Community/whistle-mute",
+      "license": "MIT",
+      "nexus_url": null,
+      "versions": [
+        {
+          "version": "0.2.1",
+          "scope": "client",
+          "game": {
+            "version": "V8.2.3",
+            "build": "26601774"
+          },
+          "ue4ss": "v3.0.1-1181-g83330635",
+          "dependsOn": [],
+          "url": "https://github.com/NuclearNightmare-Community/whistle-mute/releases/download/v0.2.1/whistle-mute-0.2.1.zip",
+          "sha256": "166ff6e7e156da80d62911c1cc8c954507e78a68119831857623fd8983e0c18b",
+          "size": 4143,
+          "published": "2026-11-21T00:49:29Z",
+          "installable_after": "2026-11-21T00:49:29Z",
+          "changelog_url": "https://github.com/NuclearNightmare-Community/whistle-mute/releases/tag/v0.2.1",
+          "attestation": null
+        }
+      ]
+    }
+  ]
 }
